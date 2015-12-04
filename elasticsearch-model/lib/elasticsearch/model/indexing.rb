@@ -72,7 +72,11 @@ module Elasticsearch
         end
 
         def to_hash
-          { @type.to_sym => @options.merge( properties: @mapping ) }
+          { @type.to_sym => @options.merge( properties: mapping_json_without_as ) }
+        end
+
+        def mapping_json_without_as
+          @mapping.as_json(except: :as)
         end
 
         def as_json(options={})
