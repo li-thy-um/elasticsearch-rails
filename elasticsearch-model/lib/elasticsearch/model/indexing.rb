@@ -337,6 +337,12 @@ module Elasticsearch
         def index_document(options={})
           document = self.as_indexed_json
 
+          # Add validation callback.
+          # Target may decide if it should be indexed.
+          if target.respond_to?(:elasticsearch_index_validation)
+            return unless target.instance_exec { elasticsearch_index_validation }
+          end
+
           client.index(
             { index: index_name,
               type:  document_type,
