@@ -365,6 +365,12 @@ module Elasticsearch
         # @see http://rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions:delete
         #
         def delete_document(options={})
+          # Add validation callback.
+          # Target may decide if it should be indexed.
+          if target.respond_to?(:elasticsearch_index_validation)
+            return unless target.instance_exec { elasticsearch_index_validation }
+          end
+
           client.delete(
             { index: index_name,
               type:  document_type,
